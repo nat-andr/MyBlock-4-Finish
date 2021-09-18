@@ -3,6 +3,7 @@ import tkinter as tk
 from tkinter.scrolledtext import ScrolledText as st
 from tkinter import messagebox as mb
 from tkinter import filedialog as fd
+from tkinter import Menu #$$$$$$$$$$$$$$$
 import os
 import pandas as pd
 
@@ -34,6 +35,23 @@ label_21.grid(row=3, column=1, sticky="w")
 output_text=st(height=28,width=60)
 output_text.grid(row=5, column=1,padx=10, pady=10, sticky="w")
 
+# Create listbox for choosing field  @@@@@@@@@@@@@@@@@@@
+myListBox=tk.Listbox(myWin,selectmode="single")
+myListBox.grid(row=5,column=0)
+
+# Create menu $$$$$$$$$$$$$$$$$$$$$$$$$
+menubar = Menu(myWin)
+myWin.config(menu=menubar)
+
+filemenu=Menu(menubar,tearoff=0)
+filemenu.add_command(label='Exit', command=myWin.destroy)
+
+# openning file dialog
+def do_dialog():
+    my_dir=os.getcwd()
+    name=fd.askopenfilename(initialdir=my_dir)
+    return name
+
 # reading csv
 def pandas_read_csv(file_name):
         df=pd.read_csv(file_name,header=None,sep=';')
@@ -43,14 +61,7 @@ def pandas_read_csv(file_name):
         label_21['text']=cnt_columns
         return df
 
-#getting content of column
-def get_column(df,column_ix):
-    cnt_rows=df.shape[0]
-    lst=[]
-    for i in range(cnt_rows):
-        lst.append(df.iat[i,column_ix])
-    return lst
-
+#filemenu.add_command(label="Open", command=do_dialog)
 # button-click_message
 def process_button():
     file_name=do_dialog()
@@ -59,13 +70,45 @@ def process_button():
     lst=get_column(df,2)
     for item in lst:
         output_text.insert(tk.END, str(item)+os.linesep)
-    mb.showinfo(title=None, message="Ready!")
+    get_headers(df)
+
+#getting content of headers  &&&&&&&&&&&&&&&&&&&&&&&&&&
+
+def get_headers(df):
+    lst2=df.loc[0]
+    print(lst2)
+    for j in range(6):
+        myListBox.insert(tk.END,lst2[j])
+    return lst2
+
+
+  
 
 # openning file dialog
 def do_dialog():
     my_dir=os.getcwd()
     name=fd.askopenfilename(initialdir=my_dir)
     return name
+
+filemenu.add_command(label="Read file", command=process_button)
+filemenu.add_separator()
+#menubar.add_cascade(label="Choose source",menu=file_Menu,underline=0)
+menubar.add_cascade(label="File", menu=filemenu)
+ 
+ 
+
+
+
+
+#getting content of column
+def get_column(df,column_ix):
+    cnt_rows=df.shape[0]
+    lst=[]
+    for i in range(cnt_rows):
+        lst.append(df.iat[i,column_ix])
+    return lst
+
+
     
 # Create button
 myBut=tk.Button(myWin,text="Read file",command=process_button)
