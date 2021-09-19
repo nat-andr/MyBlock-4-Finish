@@ -100,15 +100,16 @@ menubar = Menu(myWin)
 myWin.config(menu=menubar)
 
 filemenu=Menu(menubar,tearoff=0)
-filemenu.add_command(label='Exit', command=myWin.destroy)
-
 
 filemenu.add_command(label="Read file", command=process_button)
+filemenu.add_command(label='Exit', command=myWin.destroy)
 filemenu.add_separator()
-#menubar.add_cascade(label="Choose source",menu=file_Menu,underline=0)
 menubar.add_cascade(label="File", menu=filemenu)
  
- 
+searchmenu = Menu(menubar, tearoff=0) 
+searchmenu.add_command(label="Criteria") 
+searchmenu.add_command(label="Picking") 
+menubar.add_cascade(label="Searching", menu=searchmenu) 
 
 
 
