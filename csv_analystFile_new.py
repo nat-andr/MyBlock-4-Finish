@@ -7,6 +7,15 @@ from tkinter import Menu #$$$$$$$$$$$$$$$
 import os
 import pandas as pd
 
+# Create main window
+myWin=tk.Tk()
+myWin.geometry("650x650")
+myWin.title("Analyst of .csv files")
+
+# Create listbox for choosing field  @@@@@@@@@@@@@@@@@@@
+myListBox=tk.Listbox(myWin,selectmode='browse')
+myListBox.grid(row=5,column=0)
+
 ##############################   functions    #################################
 # openning file dialog
 def do_dialog():
@@ -23,28 +32,29 @@ def pandas_read_csv(file_name):
         label_21['text']=cnt_columns
         return df
 
-#filemenu.add_command(label="Open", command=do_dialog)
-# button-click_message
-def process_button():
+
+# menu file
+def open_csv_file():
     file_name=do_dialog()
     label_01['text']=file_name
     df=pandas_read_csv(file_name)
-    lst=get_column(df,2)
-    for item in lst:
-        output_text.insert(tk.END, str(item)+os.linesep)
-    get_headers(df)
-
-#getting content of headers  &&&&&&&&&&&&&&&&&&&&&&&&&&
-
-def get_headers(df):
-    lst2=df.loc[0]
-    print(lst2)
-    for j in range(6):
+ #   
+    lst2=df.shape[1]
+    for j in range(df.shape[0]):
         myListBox.insert(tk.END,lst2[j])
     return lst2
 
 
-  
+# handle event
+def onselect(event):
+    w = event.widget
+    idx = int(w.curselection()[0])
+    value = w.get(idx)
+    print(value)
+
+
+myListBox.bind('<<ListboxSelect>>', onselect)
+
 
 # openning file dialog
 def do_dialog():
@@ -60,13 +70,16 @@ def get_column(df,column_ix):
         lst.append(df.iat[i,column_ix])
     return lst
 
+# getting num of columns
+def colSelection():
+    selection=MyListBox.curselection()
+    print(selection)
+    num_selection=MyListBox[0]
+
 ################################## finish of functions ###################################
 
 
-# Create main window
-myWin=tk.Tk()
-myWin.geometry("650x650")
-myWin.title("Analyst of .csv files")
+
 
 # Create names of fields for output
 label_00=tk.Label(text=" Name of file:")
@@ -90,10 +103,12 @@ label_21.grid(row=3, column=1, sticky="w")
 # Create text field for general output
 output_text=st(height=28,width=60)
 output_text.grid(row=5, column=1,padx=10, pady=10, sticky="w")
-
+'''
 # Create listbox for choosing field  @@@@@@@@@@@@@@@@@@@
 myListBox=tk.Listbox(myWin,selectmode="single")
 myListBox.grid(row=5,column=0)
+'''
+
 
 # Create menu $$$$$$$$$$$$$$$$$$$$$$$$$
 menubar = Menu(myWin)
@@ -101,25 +116,23 @@ myWin.config(menu=menubar)
 
 filemenu=Menu(menubar,tearoff=0)
 
-filemenu.add_command(label="Read file", command=process_button)
+filemenu.add_command(label="Find file", command=open_csv_file)
+#filemenu.add_command(label="Read file", command=do_something)
 filemenu.add_command(label='Exit', command=myWin.destroy)
 filemenu.add_separator()
 menubar.add_cascade(label="File", menu=filemenu)
  
 searchmenu = Menu(menubar, tearoff=0) 
 searchmenu.add_command(label="Criteria") 
-searchmenu.add_command(label="Picking") 
+searchmenu.add_command(label="Picking")
+searchmenu.add_separator()
 menubar.add_cascade(label="Searching", menu=searchmenu) 
 
 
-
-
-
-
-    
+  
 # Create button
-myBut=tk.Button(myWin,text="Read file",command=process_button)
-myBut.grid(row=6, column=1)
+#myBut=tk.Button(myWin,text="Read num column",command=colSelection)
+#myBut.grid(row=4, column=1)
 
 
 
