@@ -7,45 +7,7 @@ from tkinter import Menu #$$$$$$$$$$$$$$$
 import os
 import pandas as pd
 
-# Create main window
-myWin=tk.Tk()
-myWin.geometry("650x650")
-myWin.title("Analyst of .csv files")
-
-# Create names of fields output
-label_00=tk.Label(text=" Name of file:")
-label_00.grid(row=1, column=0,padx=10, pady=10, sticky="e")
-
-label_01=tk.Label(text="")
-label_01.grid(row=1, column=1, sticky="w")
-#-------------------
-label_10=tk.Label(text=" Rows: ")
-label_10.grid(row=2, column=0, padx=10, pady=10, sticky="e")
-
-label_11=tk.Label(text="")
-label_11.grid(row=2, column=1, sticky="w")
-#-------------------
-label_20=tk.Label(text=" Columns: ")
-label_20.grid(row=3, column=0, padx=10, pady=10, sticky="e")
-
-label_21=tk.Label(text="")
-label_21.grid(row=3, column=1, sticky="w")
-
-# Create text field for general output
-output_text=st(height=28,width=60)
-output_text.grid(row=5, column=1,padx=10, pady=10, sticky="w")
-
-# Create listbox for choosing field  @@@@@@@@@@@@@@@@@@@
-myListBox=tk.Listbox(myWin,selectmode="single")
-myListBox.grid(row=5,column=0)
-
-# Create menu $$$$$$$$$$$$$$$$$$$$$$$$$
-menubar = Menu(myWin)
-myWin.config(menu=menubar)
-
-filemenu=Menu(menubar,tearoff=0)
-filemenu.add_command(label='Exit', command=myWin.destroy)
-
+##############################   functions    #################################
 # openning file dialog
 def do_dialog():
     my_dir=os.getcwd()
@@ -90,6 +52,57 @@ def do_dialog():
     name=fd.askopenfilename(initialdir=my_dir)
     return name
 
+#getting content of column
+def get_column(df,column_ix):
+    cnt_rows=df.shape[0]
+    lst=[]
+    for i in range(cnt_rows):
+        lst.append(df.iat[i,column_ix])
+    return lst
+
+################################## finish of functions ###################################
+
+
+# Create main window
+myWin=tk.Tk()
+myWin.geometry("650x650")
+myWin.title("Analyst of .csv files")
+
+# Create names of fields for output
+label_00=tk.Label(text=" Name of file:")
+label_00.grid(row=1, column=0,padx=10, pady=10, sticky="e")
+
+label_01=tk.Label(text="")
+label_01.grid(row=1, column=1, sticky="w")
+#-------------------
+label_10=tk.Label(text=" Rows: ")
+label_10.grid(row=2, column=0, padx=10, pady=10, sticky="e")
+
+label_11=tk.Label(text="")
+label_11.grid(row=2, column=1, sticky="w")
+#-------------------
+label_20=tk.Label(text=" Columns: ")
+label_20.grid(row=3, column=0, padx=10, pady=10, sticky="e")
+
+label_21=tk.Label(text="")
+label_21.grid(row=3, column=1, sticky="w")
+
+# Create text field for general output
+output_text=st(height=28,width=60)
+output_text.grid(row=5, column=1,padx=10, pady=10, sticky="w")
+
+# Create listbox for choosing field  @@@@@@@@@@@@@@@@@@@
+myListBox=tk.Listbox(myWin,selectmode="single")
+myListBox.grid(row=5,column=0)
+
+# Create menu $$$$$$$$$$$$$$$$$$$$$$$$$
+menubar = Menu(myWin)
+myWin.config(menu=menubar)
+
+filemenu=Menu(menubar,tearoff=0)
+filemenu.add_command(label='Exit', command=myWin.destroy)
+
+
 filemenu.add_command(label="Read file", command=process_button)
 filemenu.add_separator()
 #menubar.add_cascade(label="Choose source",menu=file_Menu,underline=0)
@@ -100,13 +113,6 @@ menubar.add_cascade(label="File", menu=filemenu)
 
 
 
-#getting content of column
-def get_column(df,column_ix):
-    cnt_rows=df.shape[0]
-    lst=[]
-    for i in range(cnt_rows):
-        lst.append(df.iat[i,column_ix])
-    return lst
 
 
     
