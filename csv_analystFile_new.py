@@ -23,7 +23,8 @@ myWin.title("Analyst of .csv files")
 myListBox=tk.Listbox(myWin,selectmode='browse')
 myListBox.grid(row=5,column=0)
 
-
+output_text=st(height=28,width=60)
+output_text.grid(row=5, column=1,padx=10, pady=10, sticky="w")
 
 ##############################   functions    #################################
 
@@ -41,45 +42,51 @@ def open_and_read_csv():
     label_21['text']=cnt_columns
     
     row = df.iloc[0] 
-    print(row[0])
-
-    #print(cols)
     
     for j in range(cnt_columns-1):
         print(row[j])
         myListBox.insert(tk.END,row[j])   
 
-    onselect(myListBox.selection_set)
-    myListBox.bind('<<ListboxSelect>>', clickEvent)     
 
-    selected_item()
+    myListBox.bind("<<ListboxSelect>>", callback)
     
-    lst=get_column(df,sel_col)
-    for item in get_column(df,sel_col):
+    cnt_rows=df.shape[0]
+    for i in range(cnt_rows):
+        my_lst.append(df.iat[i,sel_col])
+    print("sel_col=",sel_col, "  my_lst=",my_lst)    
+    for item in my_lst:    
         output_text.insert(tk.END, str(item)+os.linesep)
 
-    return df,lst, file_name, cnt_rows, cnt_columns
+    return df,file_name, cnt_rows, cnt_columns, my_lst
 
 #getting content of column
+'''
 def get_column(df,num_col):
-    cnt_rows=df.shape[0]
+    
 #    kol_rows=df.shape[0]
 #    print(kol_rows)
     my_lst=[]
     for i in range(cnt_rows):
         my_lst.append(df.iat[i,num_col])
     return my_lst
+'''
+ # handle event
+def callback(event):
+    selection = event.widget.curselection()
+    if selection:
+        index = selection[0]
+        data = event.widget.get(index)
+        sel_col=index
+        
+        #get_column(df,sel_col)
+        # Create text field for general output
+        
+        #for item in my_lst:
+            #output_text.insert(tk.END, str(item)+os.linesep)
+  
+         
 
 
-# handle event
-def onselect(event):
-   # w = event.widget
-    w=event.myListBox
-    idx = int(w.curselection()[0])
-    value = w.get(idx)
-    print(value,idx)
-    sel_col=idx
-    return idx
 
 ################################## finish of functions ###################################
 
@@ -109,9 +116,7 @@ label_20.grid(row=3, column=0, padx=10, pady=10, sticky="e")
 label_21=tk.Label(text="")
 label_21.grid(row=3, column=1, sticky="w")
 
-# Create text field for general output
-output_text=st(height=28,width=60)
-output_text.grid(row=5, column=1,padx=10, pady=10, sticky="w")
+
 
 
 # Create listbox for choosing field  @@@@@@@@@@@@@@@@@@@
