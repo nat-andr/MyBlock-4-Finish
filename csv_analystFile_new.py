@@ -14,6 +14,7 @@ idx=0
 cnt_rows=0
 cnt_columns=0
 file_name=""
+sel_col=0
 
 # Create main window
 myWin=tk.Tk()
@@ -50,9 +51,11 @@ def open_and_read_csv():
 
     onselect(myListBox.selection_set)
     myListBox.bind('<<ListboxSelect>>', clickEvent)     
-    sel_col=idx
+
+    selected_item()
+    
     lst=get_column(df,sel_col)
-    for item in get_column(df,5):
+    for item in get_column(df,sel_col):
         output_text.insert(tk.END, str(item)+os.linesep)
 
     return df,lst, file_name, cnt_rows, cnt_columns
@@ -66,30 +69,17 @@ def get_column(df,num_col):
     for i in range(cnt_rows):
         my_lst.append(df.iat[i,num_col])
     return my_lst
-'''
-# handle click on Listbox
 
-def clickEvent:
-  #insert code that will execute here
-    w = event.widget
-    idx = int(w.curselection()[0])
-    value = w.get(idx)
-    print(value,idx) 
-#lb = Listbox(main)
 
-    myListBox.bind('<<ListboxSelect>>', clickEvent)
-    return idx
-'''
 # handle event
 def onselect(event):
-    w = event.widget
+   # w = event.widget
+    w=event.myListBox
     idx = int(w.curselection()[0])
     value = w.get(idx)
     print(value,idx)
-    
+    sel_col=idx
     return idx
-
-
 
 ################################## finish of functions ###################################
 
