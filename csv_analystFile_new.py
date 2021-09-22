@@ -32,49 +32,99 @@ counter_OK=0
 
 # Create main window
 myWin = tk.Tk()
-myWin.geometry("650x650")
+myWin.geometry("650x700")
 myWin.title("Analyst of .csv files")
+
 myListBox = tk.Listbox(myWin, selectmode='browse')
 myListBox.grid(row=5, column=0)
 
 output_text = St(height=28, width=60)
 output_text.grid(row=5, column=1, padx=10, pady=10, sticky="w")
 
+
+
+    # Create names of fields for output
+label_00 = tk.Label(text=" Name of file:")
+label_00.grid(row=1, column=0, padx=10, pady=10, sticky="e")
+
+label_01 = tk.Label(text="")
+label_01.grid(row=1, column=1, sticky="w")
+
+    # -------------------
+label_10 = tk.Label(text=" Rows: ")
+label_10.grid(row=2, column=0, padx=10, pady=10, sticky="e")
+
+label_11 = tk.Label(text="")
+label_11.grid(row=2, column=1, sticky="w")
+
+label_20 = tk.Label(text=" Columns: ")
+label_20.grid(row=3, column=0, padx=10, pady=10, sticky="e")
+
+label_21 = tk.Label(text="")
+label_21.grid(row=3, column=1, sticky="w")
+
+
+label_ent = tk.Label(text="Enter pattern for searching")
+label_ent.place(x=100,y=600,width=200,height=30)
+#label_ent.grid(row=9, column=3, padx=10, pady=10, sticky="e")
+
+ent_search = tk.Entry(width=50)
+ent_search.place(x=300,y=600)
+#ent_search.pack
+
+my_menu = Menu(myWin)
+myWin.config(menu=my_menu)
+
+#countOK_label = tk.Label(text="")
+#countOK_label.grid(row=9, column=3, padx=10, pady=10, sticky="e")
+#countOK_label.pack
+
+############################ finish interface ##################################
+
 ##############################   functions    #################################
 
 
-# menu file
 def open_and_read_csv():
     global df
     global cnt_columns
     global cnt_rows
     global headers
+    global dir
+    global file_name
+      # -------------------
 
-    my_dir = os.getcwd()
-    my_file_name = fd.askopenfilename(initialdir = my_dir)
-    label_01['text'] = my_file_name
-    my_df=pd.read_csv(my_file_name, header=None,sep=';')
+    dir = os.getcwd()
+    file_name = fd.askopenfilename(initialdir=dir)
+    my_df = pd.read_csv(file_name, header=None, sep=';')
     df=my_df
-    cnt_rows= my_df.shape[0]
-    cnt_columns = df.shape[1]
+    cnt_rows = my_df.shape[0]
+    cnt_columns = my_df.shape[1]
+
+    label_01['text'] = file_name
     label_11['text'] = cnt_rows
     label_21['text'] = cnt_columns
-    
-    row = df.iloc[0] 
-    #for i in range(cnt_rows):
-     #   headers.append(df.iat[i, sel_col])
+
+    row = my_df.iloc[0]
 
     for j in range(cnt_columns-1):
-        #print(row[j])
-        myListBox.insert(tk.END,row[j])   
+        myListBox.insert(tk.END,row[j])
 
     myListBox.bind('<<ListboxSelect>>', callback)
 
+    return df, cnt_rows, cnt_columns, dir, file_name
 
+# menu file
+filemenu = Menu(my_menu, tearoff=0)
+filemenu.add_command(label="Open and read .csv file", command=open_and_read_csv)
+filemenu.add_separator()
+filemenu.add_command(label='Exit', command=myWin.destroy)
+my_menu.add_cascade(label="File", menu=filemenu)
 
-
-    return df, cnt_rows, cnt_columns
-
+searchmenu = Menu(my_menu, tearoff=0)
+searchmenu.add_command(label="Criteria")
+searchmenu.add_command(label="Picking")
+searchmenu.add_separator()
+my_menu.add_cascade(label="Searching", menu=searchmenu)
 #getting content of column
 
 def get_column(n_col):
@@ -102,86 +152,15 @@ def callback(event):
         sel_col=index
 
         # Create text field for general output
-        if output_text.compare("end", "==", "1.0"):
-            print("the widget is empty")
-        else:
-            print("the widget is fool, clean it")
+        if output_text.compare("end", "==", "1.0")==False:
             clearTextInput()
-    # print("sel_col=", sel_col)
+
     get_column(sel_col)
     for item in content_col:
         output_text.insert(tk.END, str(item) + os.linesep)
-
     return sel_col
 
 
-  
-         
-
-
-
-################################## finish of functions ###################################
-
-
-
-
-# Create names of fields for output
-label_00=tk.Label(text=" Name of file:")
-label_00.grid(row=1, column=0,padx=10, pady=10, sticky="e")
-
-label_01=tk.Label(text="")
-label_01.grid(row=1, column=1, sticky="w")
-
-#-------------------
-label_10=tk.Label(text=" Rows: ")
-label_10.grid(row=2, column=0, padx=10, pady=10, sticky="e")
-
-
-label_11=tk.Label(text="")
-label_11.grid(row=2, column=1, sticky="w")
-
-#-------------------
-label_20=tk.Label(text=" Columns: ")
-label_20.grid(row=3, column=0, padx=10, pady=10, sticky="e")
-
-
-label_21=tk.Label(text="")
-label_21.grid(row=3, column=1, sticky="w")
-
-
-
-
-# Create listbox for choosing field  @@@@@@@@@@@@@@@@@@@
-
-# Create menu $$$$$$$$$$$$$$$$$$$$$$$$$
-menubar = Menu(myWin)
-myWin.config(menu=menubar)
-
-filemenu=Menu(menubar,tearoff=0)
-filemenu.add_command(label="Open and read .csv file", command=open_and_read_csv)
-
-#filemenu.add_command(label="Read file", command=do_something)
-filemenu.add_command(label='Exit', command=myWin.destroy)
-filemenu.add_separator()
-menubar.add_cascade(label="File", menu=filemenu)
- 
-searchmenu = Menu(menubar, tearoff=0) 
-searchmenu.add_command(label="Criteria") 
-searchmenu.add_command(label="Picking")
-searchmenu.add_separator()
-menubar.add_cascade(label="Searching", menu=searchmenu)
-
-
-  
-# Create button
-
-#output_text.grid(row=6, column=2, padx=10, pady=10, sticky="w")
-#ButAny.pack
-
-ent_label=tk.Label(text="Enter pattern for searching")
-ent_label.grid(row=6, column=2,padx=10, pady=10, sticky="e")
-ent_search = tk.Entry(myWin, textvariable=search_row)
-ent_search.pack
 
 def check():
     global sel_col
@@ -200,18 +179,20 @@ def check():
     countOK_label['text']=counter_OK
     return counter_OK
 
-but_Search=tk.Button(myWin,text="Check", command = check)
-but_Search.grid(row=6, column=1, padx=10, pady=10, sticky="w")
-but_Search.pack
+but_check = tk.Button(myWin, text="Check", command=check)
+but_check.place(x=300,y=650,width=50,height=30)
 
-countOK_label=tk.Label(text="")
-countOK_label.grid(row=7, column=1,padx=10, pady=10, sticky="e")
-countOK_label.pack
-countOK_label
+countOK_label=tk.Label(text="000")
+countOK_label.place(x=350,y=650,width=50,height=30)
+
+#but_check.grid(row=9, column=1, padx=10, pady=10, sticky="w")
+#but_check.pack
+#Label(bg='white').place(x=10, y=10,width=50, height=30)
+
 def clearTextInput():
     output_text.delete("1.0","end")
 
-
+################################## finish of functions ###################################
 
 # Cycle mainloop
 myWin.mainloop()
