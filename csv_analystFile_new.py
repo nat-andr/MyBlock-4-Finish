@@ -11,28 +11,26 @@ import pandas as pd
 from pandas import Series, DataFrame
 from pandas.core.generic import NDFrame
 from pandas.io.parsers import TextFileReader
+from tkinter import messagebox as mb
 
 import re
 
 
-df=()
-content_col=[]
-lst2=[]
-idx=0
-cnt_rows=0
-cnt_columns=0
-file_name=""
-sel_col=0
-headers=[]
-#search_row #=tk.StringVar()
-search_row=""
-counter_OK=0
-
-
+df = ()
+content_col = []
+lst2 = []
+idx = 0
+cnt_rows = 0
+cnt_columns = 0
+file_name = ""
+sel_col = 0
+headers = []
+counter_OK = 0
+reliability_data=0
 
 # Create main window
 myWin = tk.Tk()
-myWin.geometry("650x700")
+myWin.geometry("650x750")
 myWin.title("Analyst of .csv files")
 
 myListBox = tk.Listbox(myWin, selectmode='browse')
@@ -42,15 +40,14 @@ output_text = St(height=28, width=60)
 output_text.grid(row=5, column=1, padx=10, pady=10, sticky="w")
 
 
-
-    # Create names of fields for output
+# Create names of fields for output
 label_00 = tk.Label(text=" Name of file:")
 label_00.grid(row=1, column=0, padx=10, pady=10, sticky="e")
 
 label_01 = tk.Label(text="")
 label_01.grid(row=1, column=1, sticky="w")
 
-    # -------------------
+# -------------------
 label_10 = tk.Label(text=" Rows: ")
 label_10.grid(row=2, column=0, padx=10, pady=10, sticky="e")
 
@@ -65,23 +62,13 @@ label_21.grid(row=3, column=1, sticky="w")
 
 
 label_ent = tk.Label(text="Enter pattern for searching")
-label_ent.place(x=100,y=600,width=200,height=30)
-#label_ent.grid(row=9, column=3, padx=10, pady=10, sticky="e")
+label_ent.place(x=100, y=600, width=200, height=30)
 
 ent_search = tk.Entry(width=50)
-ent_search.place(x=300,y=600)
-#ent_search.pack
+ent_search.place(x=300, y=600)
 
 my_menu = Menu(myWin)
 myWin.config(menu=my_menu)
-
-#countOK_label = tk.Label(text="")
-#countOK_label.grid(row=9, column=3, padx=10, pady=10, sticky="e")
-#countOK_label.pack
-
-############################ finish interface ##################################
-
-##############################   functions    #################################
 
 
 def open_and_read_csv():
@@ -89,12 +76,11 @@ def open_and_read_csv():
     global cnt_columns
     global cnt_rows
     global headers
-    global dir
-    global file_name
-      # -------------------
 
-    dir = os.getcwd()
-    file_name = fd.askopenfilename(initialdir=dir)
+    global file_name
+
+    my_dir = os.getcwd()
+    file_name = fd.askopenfilename(initialdir = my_dir)
     my_df = pd.read_csv(file_name, header=None, sep=';')
     df=my_df
     cnt_rows = my_df.shape[0]
@@ -111,7 +97,7 @@ def open_and_read_csv():
 
     myListBox.bind('<<ListboxSelect>>', callback)
 
-    return df, cnt_rows, cnt_columns, dir, file_name
+    return df, cnt_rows, cnt_columns, file_name
 
 # menu file
 filemenu = Menu(my_menu, tearoff=0)
@@ -165,32 +151,46 @@ def callback(event):
 def check():
     global sel_col
     global content_col
-    global search_row
     global counter_OK
+    global cnt_rows
+    my_shab: str=""
+    counter_OK = 0
+    reliability_data=0
+    my_shab = ent_search.get()
 
-    counter_OK=0
-    shablon=search_row
-#    numCol=sel_col
+    if len(my_shab) == 0:
+         mb.showinfo(title=None, message="This field cannot be empty! ")
+    else:
+        print("shablon=", my_shab)
+        #regex=re.compile(my_shab)
+        for item in content_col:
+            #if (regex.match(my_shab)):
 
-    regex=re.compile(shablon)
-    for item in content_col:
-        if (regex.match(shablon) ):
-            counter_OK+=1
-    countOK_label['text']=counter_OK
+            if str.__contains__(str(item), my_shab):
+                counter_OK+=1
+        countOK_label['text']= str(counter_OK)
+        reliability_data= round(counter_OK/cnt_rows*100, 2)
+        dostover_label['text']=str(reliability_data)+"%"
+        print("counter_OK=",counter_OK, "  cnt_rows=",cnt_rows, "reliability_data=",reliability_data)
     return counter_OK
 
 but_check = tk.Button(myWin, text="Check", command=check)
-but_check.place(x=300,y=650,width=50,height=30)
+but_check.place(x=150,y=650,width=50,height=30)
 
-countOK_label=tk.Label(text="000")
-countOK_label.place(x=350,y=650,width=50,height=30)
+countOK_label=tk.Label(text="")
+countOK_label.place(x=200,y=650,width=50,height=30)
 
-#but_check.grid(row=9, column=1, padx=10, pady=10, sticky="w")
-#but_check.pack
-#Label(bg='white').place(x=10, y=10,width=50, height=30)
+dostover_label=tk.Label(text="")
+dostover_label.place(x=350,y=650,width=250,height=30)
+
+dostover_name_label = tk.Label(text="Reliability of data")
+dostover_name_label.place(x=250, y=650, width=200, height=30)
 
 def clearTextInput():
     output_text.delete("1.0","end")
+
+
+
 
 ################################## finish of functions ###################################
 
