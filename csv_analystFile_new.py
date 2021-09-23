@@ -30,42 +30,45 @@ reliability_data=0
 
 # Create main window
 myWin = tk.Tk()
-myWin.geometry("650x750")
-myWin.title("Analyst of .csv files")
+myWin.resizable(False,True)
+myWin.geometry("600x535")
+myWin.title("Analyse of .csv files")
 
 myListBox = tk.Listbox(myWin, selectmode='browse')
-myListBox.grid(row=5, column=0)
+#myListBox.grid(row=5, column=0)
+myListBox.place(x=50, y=190, width=160, height=310)
 
 output_text = St(height=28, width=60)
-output_text.grid(row=5, column=1, padx=10, pady=10, sticky="w")
-
+#output_text.place(row=5, column=1, padx=10, pady=10, sticky="w")
+output_text.place(x=250, y=125, width=310, height=375)
 
 # Create names of fields for output
-label_00 = tk.Label(text=" Name of file:")
-label_00.grid(row=1, column=0, padx=10, pady=10, sticky="e")
+label_00 = tk.Label(text=" Имя файла:")
+label_00.place(x=83, y=60, width=26, height=13)
 
 label_01 = tk.Label(text="")
-label_01.grid(row=1, column=1, sticky="w")
+label_01.place(x=156, y=60, width=390, height=13)
 
 # -------------------
-label_10 = tk.Label(text=" Rows: ")
-label_10.grid(row=2, column=0, padx=10, pady=10, sticky="e")
+label_10 = tk.Label(text=" Строки: ")
+label_10.place(x=83, y=96, width=26, height=13)
 
 label_11 = tk.Label(text="")
-label_11.grid(row=2, column=1, sticky="w")
+label_11.place(x=156, y=96, width=60, height=13)
 
-label_20 = tk.Label(text=" Columns: ")
-label_20.grid(row=3, column=0, padx=10, pady=10, sticky="e")
+label_20 = tk.Label(text=" Столбцы: ")
+label_20.place(x=83, y=130, width=26, height=13)
 
 label_21 = tk.Label(text="")
-label_21.grid(row=3, column=1, sticky="w")
+label_21.place(x=156, y=130, width=60, height=13)
 
 
-label_ent = tk.Label(text="Enter pattern for searching")
-label_ent.place(x=100, y=600, width=200, height=30)
+label_Click = tk.Label(text="Кликните по строке")
+label_Click.place(x=100, y=340, width=50, height=20)
 
 ent_search = tk.Entry(width=50)
 ent_search.place(x=300, y=600)
+
 
 my_menu = Menu(myWin)
 myWin.config(menu=my_menu)
@@ -99,17 +102,23 @@ def open_and_read_csv():
 
     return df, cnt_rows, cnt_columns, file_name
 
+def resize():
+    #myWin.geometry("")
+    myWin.geometry("600x750")
+
 # menu file
 filemenu = Menu(my_menu, tearoff=0)
 filemenu.add_command(label="Open and read .csv file", command=open_and_read_csv)
+
 filemenu.add_separator()
 filemenu.add_command(label='Exit', command=myWin.destroy)
 my_menu.add_cascade(label="File", menu=filemenu)
 
+
 searchmenu = Menu(my_menu, tearoff=0)
-searchmenu.add_command(label="Criteria")
-searchmenu.add_command(label="Picking")
-searchmenu.add_separator()
+searchmenu.add_command(label="Searching", command=resize)
+#searchmenu.add_command(label="Picking")
+#searchmenu.add_separator()
 my_menu.add_cascade(label="Searching", menu=searchmenu)
 #getting content of column
 
@@ -188,7 +197,6 @@ dostover_name_label.place(x=250, y=650, width=200, height=30)
 
 def clearTextInput():
     output_text.delete("1.0","end")
-
 
 
 

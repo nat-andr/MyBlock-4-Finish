@@ -1,0 +1,3 @@
+H:\=00NatArnion=\=GitHub Desk=\MyBlock-4-Finish\obj\Any CPU\Debug\MyBlock-4-Finish.pyproj.CoreCompileInputs.cache
+H:\=00NatArnion=\=GitHub Desk=\MyBlock-4-Finish\bin\Microsoft.PythonTools.WebRole.dll
+H:\=00NatArnion=\=GitHub Desk=\MyBlock-4-Finish\bin\wfastcgi.py
