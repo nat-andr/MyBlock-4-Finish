@@ -297,4 +297,12 @@ if ( regex.match(s2) ):
    print "s2 matched"
 else:
    print "s2 didn't match"
+
+#############################
+def get_column(df,column_ix):
+    cnt_rows=df.shape[0]
+    lst=[]
+    for i in range(cnt_rows):
+        lst.append(df.iat[i,column_ix])
+    return lst
 '''
