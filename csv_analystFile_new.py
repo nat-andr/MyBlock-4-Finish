@@ -38,9 +38,9 @@ sel_col = 0
 headers = []
 counter_OK = 0
 reliability_data=0
-
-
-
+vybor=1
+z=[]
+kol_elem_OK=0
 # Create main window
 myWin = tk.Tk()
 #myWin.configure(background="#555")
@@ -91,8 +91,8 @@ output_text.place(x=250, y=125, width=310, height=375)
 
 
 
-entry_shablon = tk.Entry(width=25)
-entry_shablon.place(x=35, y=562)
+entry_shablon = tk.Entry(width=30)
+entry_shablon.place(x=105, y=565)
 entry_shablon.insert(0,"")
 
 
@@ -158,12 +158,13 @@ def get_column(n_col):
     n_col=sel_col
     kol_rows=df.shape[0]
     content_col.clear()
-#    print(kol_rows)
     for i in range(kol_rows):
         content_col.append(df.iat[i,sel_col])
-        content=content_col
-    return content
+    content=content_col
+    return content_col#, sel_col
  # handle event
+
+
 def callback(event):
     global sel_col
     global df
@@ -196,56 +197,86 @@ dostover_label.place(x=350,y=660,width=40,height=13)
 dostover_name_label = tk.Label(text="Доля записей, соответствующих шаблону",bg=foregroundColor)
 dostover_name_label.place(x=250, y=640, width=300, height=13)
 
+
+
+def comparing_with_shablon(spisok,obrazec):
+    global kol_elem
+    kol_elem=0
+    shaon=0
+    my_spisok=spisok
+    #regex = re.compile('[0-9,$]+$')
+    for item in my_spisok:
+       if str.__contains__(str(item), obrazec):
+        #if (regex.match(obrazec)):
+            shaon += 1
+    kol_elem_OK=shaon
+    print("kol_elem_OK=",kol_elem_OK)
+    return kol_elem_OK
+
+#################################### def check ####################
 def check():
     global sel_col
     global content_col
     global counter_OK
     global cnt_rows
-    global valChoice
+    global vybor
     global content
-
-    print("cnt_rows from start=",cnt_rows)
+    global kol_elem_OK
+    z=[]
+    print("cnt_rows from start=",cnt_rows,"sel_col=", sel_col)
     my_shab: str=""
     counter_OK = 0
     reliability_data=0
     n_records=0
     my_shab = entry_shablon.get()
+    content=[]
 
     if len(my_shab) == 0:
-         mb.showinfo(title=None, message="")
+         mb.showinfo(title=None, message="Поле шаблона не может быть пустым")
     else:
-        print("shablon=", my_shab)
+        ShowChoice()
         #regex=re.compile(my_shab)
-        if valChoice==1:
+        if vybor==1:
             n_records = cnt_rows
+            shaon=0
+            #content=output_text.get("1.0","end")#список выбранные записи
             content=content_col
-            for i in range(cnt_rows):
-                content.append(df.iat[i, 1])
+            for item in content:
+                if str.__contains__(str(item), my_shab):
+                    # if (regex.match(obrazec)):
+                    shaon += 1
+            kol_elem_OK = shaon
+            #comparing_with_shablon(content,my_shab)
+
         else:
             n_records = cnt_rows * cnt_columns
+            kol_elem_OK=0
+            shaon = 0
             for i in range(cnt_columns-1):
-                for j in range(cnt_rows):
-                    content.append(df.iat[i,j])
+                content = get_column(i)
+                shaon=0
+                for item in content:
+                    if str.__contains__(str(item), my_shab):
+                        shaon+=1
+                        # if (regex.match(obrazec)):
+            kol_elem_OK =kol_elem_OK+shaon
 
-        print("after vybor n_records=", n_records)
-        for item in content:
-            if str.__contains__(str(item), my_shab):
-                counter_OK += 1
+        countOK_label['text']= str(kol_elem_OK)
+        reliability_data= round((kol_elem_OK/n_records)*100, 2)
+        dostover_label['text']=str(reliability_data)+"%"
+        print("vybor=", vybor, "  kol_elem_OK=", kol_elem_OK, "  n_records=", n_records, "   reliability_data=",reliability_data)
+        entry_shablon.config(state="readonly")
 
-    countOK_label['text']= str(counter_OK)
-    reliability_data= round((counter_OK/n_records)*100, 2)
-    dostover_label['text']=str(reliability_data)+"%"
-    print("  counter_OK=",counter_OK, "  cnt_rows=",cnt_rows, "reliability_data=",reliability_data)
-    return counter_OK
 
+def entry_enable_clear():
+    entry_shablon.config(state="normal")
+    entry_shablon.insert(0, "")
 
 but_check = tk.Button(myWin, text="Найти", command=check,background="#800000",foreground="#FFFACD", relief="raised")
-but_check.place(x=420,y=562,width=108,height=30)
+but_check.place(x=510,y=562,width=70,height=30)
 
-
-
-
-
+but_clear=tk.Button(myWin, text="Очистить", command=entry_enable_clear,background="#800000",foreground="#FFFACD", relief="raised")
+but_clear.place(x=20, y=562,width=70,height=30)#x=65, y=562
 
 
 label_line1=tk.Label(text=".",bg='black')
@@ -258,15 +289,15 @@ valChoice = tk.IntVar()
 valChoice.set(1)
 
 choices=[("Поиск по одному столбцу",1), ("Поиск по всему файлу",2)]
+
 def ShowChoice():
-    print(valChoice.get())
+    global vybor
+    vybor=valChoice.get()
+    print("valChoice.get()=", vybor)
+    return vybor
 
 for choice, val in choices:
-    tk.Radiobutton(myWin,
-                   text=choice,
-                   variable=valChoice,
-                   command=ShowChoice,
-                   value=val, bg=foregroundColor).place(x=200,y=520+val*20)
+    tk.Radiobutton(myWin,text=choice, variable=valChoice, command=ShowChoice, value=val, bg=foregroundColor).place(x=320,y=530+val*20)
 
 
 #Label(frame, text='Color-Demo').pack()
@@ -305,4 +336,10 @@ def get_column(df,column_ix):
     for i in range(cnt_rows):
         lst.append(df.iat[i,column_ix])
     return lst
+'''
+'''            
+            for item in content:
+                #if str.__contains__(str(item), my_shab):
+                if (regex.match(my_shab)):
+                    counter_OK += 1
 '''
